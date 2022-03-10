@@ -10,6 +10,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class QuestionController extends AbstractController
 {
+
+    private $logger;
+    private $isDebug;
+
+
+    public function __construct(LoggerInterface $logger, bool $isDebug)
+    {
+        $this->logger = $logger;
+        $this->isDebug = $isDebug;
+    }
+
     /**
      * @Route("/",name="app_homepage")
      */
@@ -24,7 +35,8 @@ class QuestionController extends AbstractController
      */
     public function show($slug,MarkdownHelper $markdownHelper)
     {
-
+        dump($isDebug);
+       // dump($this->getParameter('cache_adapter'));
         $answers=['make sure your cat is sitting `perfectly`',
                 'furry shoes better than cat',
                 'try it backwards'    
