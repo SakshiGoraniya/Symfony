@@ -1,5 +1,8 @@
 <?php
 namespace App\Controller;
+
+use Sentry\State\HubInterface;
+use Psr\Log\LoggerInterface;
 use App\service\MarkdownHelper;
 // use Symfony\Contracts\Cache\CacheInterface;
 // use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
@@ -35,7 +38,16 @@ class QuestionController extends AbstractController
      */
     public function show($slug,MarkdownHelper $markdownHelper)
     {
-        dump($isDebug);
+       
+        if ($this->isDebug) {
+
+            $this->logger->info('We are in Debug Mode!');
+            
+            }
+            
+        
+            // throw new \Exception('Bad stuff happened!');
+        //dump($isDebug);
        // dump($this->getParameter('cache_adapter'));
         $answers=['make sure your cat is sitting `perfectly`',
                 'furry shoes better than cat',
