@@ -25,7 +25,7 @@ class QuestionController extends AbstractController
     }
 
     /**
-     * @Route("/",name="app_homepage")
+    * @Route("/",name="app_homepage")
      */
     public function homepage(Environment $twigEnvironment)
     {
@@ -33,8 +33,18 @@ class QuestionController extends AbstractController
         return $this->render('question/homepage.html.twig');
         // return new Response($html);
     }
+    /**
+     * @Route("/questions/new")
+     */
+    public function new()
+    {
+        return new Response('Time for some Doctrine magic!');
+    }
+
+
+
      /**
-     * @Route("/questions/{slug}",name="app_question_show")
+     * @Route("/questions123/{slug}",name="app_question_show")
      */
     public function show($slug,MarkdownHelper $markdownHelper)
     {
