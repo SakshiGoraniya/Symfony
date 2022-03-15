@@ -23,7 +23,7 @@ class Question
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255,unique=true)
+     * @ORM\Column(type="string", length=100, unique="true")
      */
     private $slug;
 
@@ -33,9 +33,14 @@ class Question
     private $question;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $askedAt;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $votes=0;
 
     public function getId(): ?int
     {
@@ -78,14 +83,26 @@ class Question
         return $this;
     }
 
-    public function getAskedAt(): ?\DateTimeImmutable
+    public function getAskedAt(): ?\DateTimeInterface
     {
         return $this->askedAt;
     }
 
-    public function setAskedAt(?\DateTimeImmutable $askedAt): self
+    public function setAskedAt(?\DateTimeInterface $askedAt): self
     {
         $this->askedAt = $askedAt;
+
+        return $this;
+    }
+
+    public function getVotes(): int
+    {
+        return $this->votes;
+    }
+
+    public function setVotes(int $votes): self
+    {
+        $this->votes = $votes;
 
         return $this;
     }
