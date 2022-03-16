@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,7 +20,46 @@ class AnswerRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Answer::class);
+    
     }
+    public static function createApprovedCriteria(): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(Criteria::expr()->eq('status', Answer::STATUS_APPROVED));
+    }
+
+        /**
+     * @return Answer[]
+     */
+    public function findAllApproved(int $max = 10): array
+    {
+        return $this->createQueryBuilder('answer')
+            ->addCriteria(self::createApprovedCriteria())
+            ->setMaxResults($max)
+            ->getQuery()
+            ->getResult();
+    }
+     /**
+     * @return Answer[] Returns an array of Answer objects
+     */
+   public function findMostPopular(): array
+   {
+       return $this->createQueryBuilder('answer')
+           ->addCriteria(self::createApprovedCriteria())
+           ->orderBy('answer.votes', 'DESC')
+           ->setMaxResults(10)
+           ->getQuery()
+           ->getResult();
+   }
+
+
+
+
+
+
+
+
+
 
     /**
      * @throws ORMException
