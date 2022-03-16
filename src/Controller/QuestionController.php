@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Repository\QuestionRepository;
+use App\Repository\AnswerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Question;
 use Sentry\State\HubInterface;
@@ -66,11 +67,14 @@ class QuestionController extends AbstractController
         
 
          // throw new \Exception('Bad stuff happened!');
-        
-        $answers=['make sure your cat is sitting `perfectly`',
-                'furry shoes better than cat',
-                'try it backwards'    
-    ];
+         $answers = $question->getAnswers();
+
+       
+       
+    //     $answers=['make sure your cat is sitting `perfectly`',
+    //             'furry shoes better than cat',
+    //             'try it backwards'    
+    // ];
 
     // $questionText="I\'ve been turned into a cat, any thoughts on how to turn back? While I\'m **adorable**, I don\'t really care for cat food.";
     // $parsedQuestionText = $markdownHelper->parse($questionText);
