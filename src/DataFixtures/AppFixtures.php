@@ -1,6 +1,7 @@
 <?php
 
 namespace App\DataFixtures;
+use App\Factory\UserFactory;
 use App\Factory\TagFactory;
 use App\Entity\Tag;
 use App\Entity\Answer;
@@ -17,11 +18,6 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         TagFactory::createMany(100);
-
-
-     
-        // $product = new Product();
-        // $manager->persist($product);
       $questions=  QuestionFactory::new()->createMany(20);
 
 
@@ -47,6 +43,8 @@ class AppFixtures extends Fixture
             ];
         })->needsApproval()->many(20)->create();
        
+        UserFactory::createOne(['email' => 'abraca_admin@example.com']);
+        UserFactory::createMany(10);
        
 
 
