@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -51,13 +50,26 @@ class Question
     private $votes=0;
 
     /**
-     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question")
+     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question",fetch="EXTRA_LAZY")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $answers;
+
+    /**
+     * @ORM\OneToMany(targetEntity=QuestionTag::class, mappedBy="question")
+     */
+    private $questionTags;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="questions")
+     */
+
 
     public function __construct()
     {
         $this->answers = new ArrayCollection();
+        $this->questionTags = new ArrayCollection();
+     
     }
 
     public function getId(): ?int
@@ -148,7 +160,13 @@ class Question
     {
         return $this->answers;
     }
-
+    public function getApprovedAnswers(): Collection
+    {
+        $criteria = Criteria::create()
+        ->andWhere(Criteria::expr()->eq('status', Answer::STATUS_APPROVED));
+    return $this->answers->matching($criteria);
+    }
+    
     public function addAnswer(Answer $answer): self
     {
         if (!$this->answers->contains($answer)) {
@@ -170,4 +188,36 @@ class Question
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, QuestionTag>
+     */
+    public function getQuestionTags(): Collection
+    {
+        return $this->questionTags;
+    }
+
+    public function addQuestionTag(QuestionTag $questionTag): self
+    {
+        if (!$this->questionTags->contains($questionTag)) {
+            $this->questionTags[] = $questionTag;
+            $questionTag->setQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionTag(QuestionTag $questionTag): self
+    {
+        if ($this->questionTags->removeElement($questionTag)) {
+            // set the owning side to null (unless already changed)
+            if ($questionTag->getQuestion() === $this) {
+                $questionTag->setQuestion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }

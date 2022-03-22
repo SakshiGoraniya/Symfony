@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Controller;
+use App\Repository\AnswerRepository;
+use App\Entity\Answer;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,8 +16,10 @@ class AnswerController extends AbstractController
     /**
      * @Route("/answers/{id}/vote", methods="POST", name="answer_vote")
      */
-    public function answerVote($id, LoggerInterface $logger, Request $request)
+    public function answerVote(Answer $answer, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager)
     {
+
+        dump('sakshi');
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
 
@@ -23,29 +28,25 @@ class AnswerController extends AbstractController
         // use real logic here to save this to the database
         if ($direction === 'up') {
             $logger->info('Voting up!');
-            $currentVoteCount = rand(7, 100);
+            $answer->setVotes($answer->getVotes() + 1);
         } else {
             $logger->info('Voting down!');
-            $currentVoteCount = rand(0, 5);
+            $answer->setVotes($answer->getVotes() - 1);
         }
-
-        return $this->json(['votes' => $currentVoteCount]);
+        $entityManager->flush();
+        return $this->json(['votes' => $answer->getVotes()]);
     }
-}
-    // /**
-    //  * @Route("/comments/{id<\d+>}/vote/{direction<up|down>}",methods="POST")
-    //  */
-    // public function commentvote($id,$direction,LoggerInterface $logger)
-    // {
-    //     //todo user id to query database
-    //     if ($direction == 'up'){
-    //         $logger->info('Voting up!');
-    //         $currentVoteCount=rand(7,100);
-    //     }
-    //     else{
-    //         $logger->info('Voting down!');
-    //         $currentVoteCount=rand(0,5);
-    //     }
 
-    //     return $this->json(['votes'=>$currentVoteCount]);
-    // }
+    /**
+    * @Route("/answers/popular", name="app_popular_answers")
+    */
+  public function popularAnswers(AnswerRepository $answerRepository, Request $request)
+  {
+      $answers = $answerRepository->findMostPopular($request->query->get('q'));
+   
+      return $this->render('answer/popularAnswers.html.twig', [
+          'answers' => $answers
+      ]);
+  }
+}
+    

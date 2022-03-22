@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use App\Repository\QuestionRepository;
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -8,8 +10,6 @@ use App\Entity\Question;
 use Sentry\State\HubInterface;
 use Psr\Log\LoggerInterface;
 use App\service\MarkdownHelper;
-// use Symfony\Contracts\Cache\CacheInterface;
-// use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 use Twig\Environment;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,17 +30,19 @@ class QuestionController extends AbstractController
     }
 
     /**
-     * @Route("/",name="app_homepage")
+     * @Route("/{page<\d+>}",name="app_homepage")
      */
-    public function homepage(EntityManagerInterface $entityManager,QuestionRepository $repository)
+    public function homepage(EntityManagerInterface $entityManager,QuestionRepository $repository, Request $request,int $page = 1 )
     {
-       // $repository = $entityManager->getRepository(Question::class);
-        $questions = $repository->findAllAskedOrderedByNewest();
+     
+        $queryBuilder = $repository->createAskedOrderedByNewestQueryBuilder();
+        $pagerfanta = new Pagerfanta(new QueryAdapter($queryBuilder));
+        $pagerfanta->setMaxPerPage(5);
+        $pagerfanta->setCurrentPage($request->query->get('page', $page));
         return $this->render('question/homepage.html.twig', [
-            'questions' => $questions,
+            'pager' => $pagerfanta,
         ]);
 
-        // $html = $twigEnvironment->render('question/homepage.html.twig');
         return $this->render('question/homepage.html.twig');
         // return new Response($html);
     }
@@ -57,35 +59,9 @@ class QuestionController extends AbstractController
             $this->logger->info('We are in Debug Mode!');
             
         }
-            
-        // $repository = $entityManager->getRepository(Question::class);
-        // /** @var Question|null $question    */
-        // $question = $repository->findOneBy(['slug' => $slug]);
-        // if (!$question) {
-        //     throw $this->createNotFoundException(sprintf('No question found for slug %s', $slug));
-        // }
-        
-
-         // throw new \Exception('Bad stuff happened!');
          $answers = $question->getAnswers();
 
        
-       
-    //     $answers=['make sure your cat is sitting `perfectly`',
-    //             'furry shoes better than cat',
-    //             'try it backwards'    
-    // ];
-
-    // $questionText="I\'ve been turned into a cat, any thoughts on how to turn back? While I\'m **adorable**, I don\'t really care for cat food.";
-    // $parsedQuestionText = $markdownHelper->parse($questionText);
-
-      
-        /* return $this->render('question/show.html.twig',[
-            'question'=> ucwords(str_replace('-', ' ', $slug)),
-            'questionText'=>$parsedQuestionText,
-            'answers'=>$answers,
-        ]);
-        */
 
         return $this->render('question/show.html.twig',[
             'question'=> $question,
@@ -93,6 +69,7 @@ class QuestionController extends AbstractController
         ]);
         
     }
+
     /**
      * @Route("/questions/{slug}/vote", name="app_question_vote", methods="POST")
      */
