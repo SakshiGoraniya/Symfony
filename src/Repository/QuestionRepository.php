@@ -46,19 +46,15 @@ class QuestionRepository extends ServiceEntityRepository
         }
     }
 
-     /**
-     * @return Question[] Returns an array of Question objects
-     */
+    
 
-    public function findAllAskedOrderedByNewest()
+    public function createAskedOrderedByNewestQueryBuilder(): QueryBuilder
     {
         return $this->addIsAskedQueryBuilder()
-            // ->andWhere('q.exampleField = :val')
-            // ->orderBy('q.id', 'ASC')
-            // ->setMaxResults(10)
-                ->orderBy('q.askedAt','DESC')
-                ->getQuery()
-                ->getResult()
+            ->orderBy('q.askedAt', 'DESC')
+            ->leftJoin('q.questionTags', 'question_tag')
+            ->innerJoin('question_tag.tag', 'tag')
+            ->addSelect('question_tag', 'tag')
         ;
     }
     private function addIsAskedQueryBuilder(QueryBuilder $qb = null): QueryBuilder
@@ -74,15 +70,5 @@ class QuestionRepository extends ServiceEntityRepository
 
 
 
-    /*
-    public function findOneBySomeField($value): ?Question
-    {
-        return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+
 }

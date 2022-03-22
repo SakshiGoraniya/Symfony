@@ -9,6 +9,7 @@ use App\Factory\AnswerFactory;
 use App\Entity\Question;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\Factory\QuestionTagFactory;
 
 class AppFixtures extends Fixture
 {
@@ -16,12 +17,19 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         TagFactory::createMany(100);
+
+
+     
         // $product = new Product();
         // $manager->persist($product);
-      $questions=  QuestionFactory::new()->createMany(20,function(){
-          return [
-            'tags' => TagFactory::randomRange(0, 5),
-          ];
+      $questions=  QuestionFactory::new()->createMany(20);
+
+
+      QuestionTagFactory::createMany(100,function(){
+            return[
+                'tag' => TagFactory::random(),
+                'question' => QuestionFactory::random(),
+            ];
       });
         QuestionFactory::new()
         ->unpublished()
