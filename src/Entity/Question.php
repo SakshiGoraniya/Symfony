@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\AnswerRepository;
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,12 +10,12 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 /**
  * @ORM\Entity(repositoryClass=QuestionRepository::class)
  */
 class Question
 {
-    //
     use TimestampableEntity;
     /**
      * @ORM\Id
@@ -29,7 +30,7 @@ class Question
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=100, unique="true")
+     * @ORM\Column(type="string", length=100, unique=true)
      * @Gedmo\Slug(fields={"name"})
      */
     private $slug;
@@ -47,10 +48,10 @@ class Question
     /**
      * @ORM\Column(type="integer")
      */
-    private $votes=0;
+    private $votes = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question",fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question", fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $answers;
@@ -60,16 +61,10 @@ class Question
      */
     private $questionTags;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="questions")
-     */
-
-
     public function __construct()
     {
         $this->answers = new ArrayCollection();
         $this->questionTags = new ArrayCollection();
-     
     }
 
     public function getId(): ?int
@@ -129,9 +124,10 @@ class Question
     {
         return $this->votes;
     }
-    public function getVotesString(): string
-    {
-        $prefix = $this->getVotes() >=0 ? '+' : '-';
+
+    public function getVotesString(): string{
+        $prefix = $this->getVotes() >= 0 ? '+' : '-';
+
         return sprintf('%s %d', $prefix, abs($this->getVotes()));
     }
 
@@ -147,6 +143,7 @@ class Question
         $this->votes++;
         return $this;
     }
+
     public function downVote(): self
     {
         $this->votes--;
@@ -160,11 +157,10 @@ class Question
     {
         return $this->answers;
     }
+
     public function getApprovedAnswers(): Collection
     {
-        $criteria = Criteria::create()
-        ->andWhere(Criteria::expr()->eq('status', Answer::STATUS_APPROVED));
-    return $this->answers->matching($criteria);
+        return $this->answers->matching(AnswerRepository::createApprovedCriteria());
     }
     
     public function addAnswer(Answer $answer): self
@@ -219,5 +215,4 @@ class Question
         return $this;
     }
 
-    
 }

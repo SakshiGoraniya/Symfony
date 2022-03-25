@@ -38,7 +38,7 @@ class QuestionTag
     {
         $this->taggedAt = new \DateTimeImmutable();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;

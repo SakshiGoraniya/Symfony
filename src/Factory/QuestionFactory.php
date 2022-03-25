@@ -36,23 +36,21 @@ final class QuestionFactory extends ModelFactory
         // TODO inject services if required (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services)
     }
 
-    public function unpublished(): self
-    {
+    public function unpublished(): self{
         return $this->addState(['askedAt' => null]);
     }
-    
-
     protected function getDefaults(): array
     {
         return [
+            // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'name' => self::faker()->realText(50),
-           
             'question' => self::faker()->paragraphs(
                 self::faker()->numberBetween(1, 4),
                 true
-            ),
-            'askedAt' => self::faker()->dateTimeBetween('-100 days', '-1 minute'),
-            'votes' => rand(-20, 50),
+            )            
+       ,
+        'askedAt' => self::faker()->dateTimeBetween('-100 days', '-1 minute'),
+        'votes' => rand(-20, 50),
         ];
     }
 
@@ -60,17 +58,8 @@ final class QuestionFactory extends ModelFactory
     {
         // see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
         return $this
-        //     ->afterInstantiate(function(Question $question)
-            
-        //     {
-        //         if (!$question->getSlug()) {
-
-        //             $slugger = new AsciiSlugger();
-        //             $question->setSlug($slugger->slug($question->getName()));
-        //         }
-        //     })
+            //->afterInstantiate(function(Question $question) {})
         ;
-        
     }
 
     protected static function getClass(): string

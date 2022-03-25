@@ -46,29 +46,35 @@ class QuestionRepository extends ServiceEntityRepository
         }
     }
 
-    
-
+        
     public function createAskedOrderedByNewestQueryBuilder(): QueryBuilder
     {
         return $this->addIsAskedQueryBuilder()
             ->orderBy('q.askedAt', 'DESC')
             ->leftJoin('q.questionTags', 'question_tag')
             ->innerJoin('question_tag.tag', 'tag')
-            ->addSelect('question_tag', 'tag')
+            ->addSelect(['question_tag', 'tag'])           
         ;
     }
-    private function addIsAskedQueryBuilder(QueryBuilder $qb = null): QueryBuilder
-    {
+    
+    private function addIsAskedQueryBuilder(QueryBuilder $qb = null): QueryBuilder{
         return $this->getOrCreateQueryBuilder($qb)
             ->andWhere('q.askedAt IS NOT NULL');
     }
 
-    private function getOrCreateQueryBuilder(QueryBuilder $qb = null): QueryBuilder
-    {
-        return $qb ?: $this->createQueryBuilder('q');
+    private function getOrCreateQueryBuilder(QueryBuilder $qb = null): QueryBuilder{
+        return $qb ? : $this->createQueryBuilder('q');
     }
-
-
-
-
+    
+    /*
+    public function findOneBySomeField($value): ?Question
+    {
+        return $this->createQueryBuilder('q')
+            ->andWhere('q.exampleField = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    */
 }

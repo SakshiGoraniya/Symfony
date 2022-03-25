@@ -38,11 +38,9 @@ final class QuestionTagFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
-              'question' => QuestionFactory::new(),
+            'question' => QuestionFactory::new(),
             'tag' => TagFactory::new(),
             'taggedAt' => \DateTimeImmutable::createFromMutable(self::faker()->datetime()),
-            // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-          
         ];
     }
 
