@@ -10,6 +10,7 @@ import axios from 'axios';
  *
  * Delete this file or adapt it for your use!
  */
+
 export default class extends Controller {
     static targets = ['voteTotal'];
     static values = {
@@ -18,6 +19,7 @@ export default class extends Controller {
 
     clickVote(event) {
         event.preventDefault();
+
         const button = event.currentTarget;
 
         axios.post(this.urlValue, JSON.stringify({
@@ -29,3 +31,4 @@ export default class extends Controller {
         ;
     }
 }
+

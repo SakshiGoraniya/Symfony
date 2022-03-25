@@ -3,20 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\AnswerRepository;
+use Doctrine\Common\Cache\Psr6\InvalidArgument;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use InvalidArgumentException;
 
 /**
  * @ORM\Entity(repositoryClass=AnswerRepository::class)
  */
 class Answer
 {
+    public const STATUS_NEEDS_APPROVAL ="needs_approval";
+    public const STATUS_SPAM ="spam";
+    public const STATUS_APPROVED ="approved";
 
-
-    public const STATUS_NEEDS_APPROVAL = 'needs_approval';
-    public const STATUS_SPAM = 'spam';
-    public const STATUS_APPROVED = 'approved';
     use TimestampableEntity;
     /**
      * @ORM\Id
@@ -38,7 +38,7 @@ class Answer
     /**
      * @ORM\Column(type="integer")
      */
-    private $votes=0;
+    private $votes = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity=Question::class, inversedBy="answers")
@@ -49,9 +49,7 @@ class Answer
     /**
      * @ORM\Column(type="string", length=15)
      */
-    private $status= self::STATUS_NEEDS_APPROVAL;
-
-
+    private $status = self::STATUS_NEEDS_APPROVAL;
 
     public function getId(): ?int
     {
@@ -86,11 +84,13 @@ class Answer
     {
         return $this->votes;
     }
-    public function getVotesString(): string
-    {
-        $prefix = $this->getVotes() >=0 ? '+' : '-';
+
+    public function getVotesString(): string{
+        $prefix = $this->getVotes() >= 0 ? '+' : '-';
+
         return sprintf('%s %d', $prefix, abs($this->getVotes()));
     }
+    
     public function setVotes(int $votes): self
     {
         $this->votes = $votes;
@@ -102,11 +102,13 @@ class Answer
     {
         return $this->question;
     }
+
     public function getQuestionText(): string
     {
         if (!$this->getQuestion()) {
             return '';
         }
+
         return (string) $this->getQuestion()->getQuestion();
     }
 
@@ -125,15 +127,14 @@ class Answer
     public function setStatus(string $status): self
     {
         if (!in_array($status, [self::STATUS_NEEDS_APPROVAL, self::STATUS_SPAM, self::STATUS_APPROVED])) {
-            throw new \InvalidArgumentException(sprintf('Invalid status "%s"', $status));
+            throw new \InvalidArgumentException(sprintf('Invalid status %s', $status));
         }
-
         $this->status = $status;
 
         return $this;
     }
 
-    public function isApproved(): bool
+    public function isApproved(): bool 
     {
         return $this->status === self::STATUS_APPROVED;
     }

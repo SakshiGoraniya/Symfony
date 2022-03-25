@@ -26,7 +26,6 @@ class Tag
      */
     private $name;
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -44,5 +43,4 @@ class Tag
         return $this;
     }
 
-    
 }
