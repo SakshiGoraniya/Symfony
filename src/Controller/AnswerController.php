@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Answer;
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\EntityManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use Http\Client\Common\Plugin\RetryPlugin;
 use Psr\Log\LoggerInterface;
@@ -12,14 +13,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AnswerController extends AbstractController
+class AnswerController extends BaseController
 {
     /**
      * @Route("/answers/{id}/vote", methods="POST", name="answer_vote")
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
     {
-        dump('clicked by answerVote in AnswerController');
+        $logger->info('{user} is voting on answer {answer}!', [
+            'user' => $this->getUser()->getEmail(),
+            'answer' => $answer->getId(),
+        ]);
+       
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
 
