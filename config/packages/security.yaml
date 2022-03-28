@@ -39,6 +39,7 @@ security:
             logout: true
 
             switch_user: true
+            login_throttling: true
 
             remember_me:
                 secret: '%kernel.secret%'
