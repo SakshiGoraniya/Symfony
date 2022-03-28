@@ -11,6 +11,8 @@ import './styles/app.css';
 // start the Stimulus application
 import './bootstrap';
 
+import {Collapse} from 'bootstrap';
+
 // Need jQuery?
 import $ from 'jquery';
 
