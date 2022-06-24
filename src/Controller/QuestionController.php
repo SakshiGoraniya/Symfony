@@ -11,11 +11,11 @@ use App\Service\MarkdownHelper;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Twig\Environment;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class QuestionController extends AbstractController
 {
@@ -54,8 +54,15 @@ class QuestionController extends AbstractController
      * @Route("/questions/new")
      * @IsGranted("ROLE_USER")
      */
-    public function new(EntityManagerInterface $entityManager){
-       
+    public function new(){
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        // Above is same as below if condition
+        /*
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('No access for you!');
+            
+        } 
+        */
         return new Response('Sounds like a GREAT feature for V2!');
     }
 
@@ -79,16 +86,17 @@ class QuestionController extends AbstractController
         ]);
         
     }
+
     /**
      * @Route("/questions/edit/{slug}",name="app_question_edit")
      */
     public function edit(Question $question)
     {       
-        $this->denyAccessUnlessGranted('EDIT',$question);
-       
+        $this->denyAccessUnlessGranted('EDIT', $question);
 
+        
         return $this->render('question/edit.html.twig',[
-            'question'=> $question,
+            'question'=> $question
         ]);
         
     }

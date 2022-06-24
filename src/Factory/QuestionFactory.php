@@ -39,10 +39,10 @@ final class QuestionFactory extends ModelFactory
     public function unpublished(): self{
         return $this->addState(['askedAt' => null]);
     }
+
     protected function getDefaults(): array
     {
         return [
-            // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'name' => self::faker()->realText(50),
             'question' => self::faker()->paragraphs(
                 self::faker()->numberBetween(1, 4),

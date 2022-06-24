@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,15 +13,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
-use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
-use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFactorInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     /**
      * @ORM\Id
@@ -60,12 +60,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFacto
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isVerified=false;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $totpSecret;
+    private $isVerified = false;
 
+    /**
+     * @ORM\Column(name="totp_secret", type="string", nullable=true)
+     */
+    private ?string $totp_secret;
+    public function __toString(): string
+    {
+            return (string) $this->getEmail();
+    }
     public function __construct()
     {
         $this->questions = new ArrayCollection();
@@ -182,20 +186,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFacto
 
         return $this;
     }
-    
+
     /**
      * @Groups("user:read")
      */
     public function getAvatarUri(int $size = 32): string
     {
-        //  src="https://ui-avatars.com/api/?name={{app.user.firstName| url_encode}}&size=32&background=random"
-        return 'https://ui-avatars.com/api/?'.http_build_query([
+        // https://ui-avatars.com/api/?name={{ app.user.firstName|url_encode }}&size=32&background=random
+        return 'https://ui-avatars.com/api/?' . http_build_query([
             'name' => $this->getDisplayName(),
             'size' => $size,
             'background' => 'random',
-
         ]);
     }
+
     public function getDisplayName(): string
     {
         return $this->getFirstName() ?: $this->getEmail();
@@ -242,9 +246,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFacto
 
         return $this;
     }
+
     public function isTotpAuthenticationEnabled(): bool
     {
-        return $this->totpSecret ? true : false;
+        return $this->totp_secret ? true : false;
     }
     public function getTotpAuthenticationUsername(): string
     {
@@ -252,12 +257,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFacto
     }
     public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
     {
-        return new TotpConfiguration($this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+        return new TotpConfiguration($this->totp_secret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
-   
-    public function setTotpSecret(?string $totpSecret): self
+
+    public function setTotpSecret(?string $totp_secret): self
     {
-        $this->totpSecret = $totpSecret;
+        $this->totp_secret = $totp_secret;
+
         return $this;
     }
 }

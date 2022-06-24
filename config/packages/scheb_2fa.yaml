@@ -8,5 +8,5 @@ scheb_two_factor:
         # - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
     totp:
         enabled: true
-        issuer: 'Cauldron Overflow'    
-        template: security/2fa_form.html.twig
+        issuer: 'Cauldron Overflow'
+        template: 'security/2fa_form.html.twig'

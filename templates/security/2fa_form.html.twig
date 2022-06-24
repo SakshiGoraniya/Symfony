@@ -40,7 +40,9 @@
                 {% if isCsrfProtectionEnabled %}
                     <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
                 {% endif %}
+                {# The logout link gives the user a way out if they can't complete two-factor authentication #}
                 <a class="btn btn-link" href="{{ logoutPath }}">{{ "cancel"|trans({}, 'SchebTwoFactorBundle') }}</a>
+
                 <button type="submit" class="btn btn-primary">{{ "login"|trans({}, 'SchebTwoFactorBundle') }}</button>
             </form>
 

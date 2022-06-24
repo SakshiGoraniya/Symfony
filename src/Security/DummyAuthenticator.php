@@ -14,7 +14,7 @@ class DummyAuthenticator extends AbstractAuthenticator implements Authentication
 {
     public function supports(Request $request): ?bool
     {
-      return false;
+        return false;
     }
 
     public function authenticate(Request $request): Passport
@@ -32,8 +32,8 @@ class DummyAuthenticator extends AbstractAuthenticator implements Authentication
         // TODO: Implement onAuthenticationFailure() method.
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
-    {
-        dd('DummyAuthenticator::start()!');
-    } 
+   public function start(Request $request, AuthenticationException $authException = null): Response
+   {
+        dd('DummyAuthenticator::start()');
+   }
 }

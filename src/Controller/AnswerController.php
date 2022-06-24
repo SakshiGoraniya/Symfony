@@ -5,10 +5,10 @@ namespace App\Controller;
 use App\Entity\Answer;
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\EntityManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use Http\Client\Common\Plugin\RetryPlugin;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,11 +21,11 @@ class AnswerController extends BaseController
      */
     public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
     {
-        $logger->info('{user} is voting on answer {answer}!', [
+        $logger->info('{user} is voting on answer {answer}', [
             'user' => $this->getUser()->getEmail(),
             'answer' => $answer->getId(),
         ]);
-       
+        dump('clicked by answerVote in AnswerController');
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
 
