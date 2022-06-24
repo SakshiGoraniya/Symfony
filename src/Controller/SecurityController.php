@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Controller;
-use Endroid\QrCode\Builder\Builder;
+
+use Scheb\TwoFactorBundle\Security\TwoFactor\QrCode\QrCodeGenerator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Scheb\TwoFactorBundle\Security\TwoFactor\QrCode\QrCodeGenerator;
+
 class SecurityController extends BaseController
 {
     /**
@@ -31,21 +32,27 @@ class SecurityController extends BaseController
         throw new \Exception("logout() should never be reached.");
         
     }
-     /**
-     * @Route("/authentication/2fa/enable", name="app_2fa_enable")
-     * @IsGranted("IS_AUTHENTICATED_FULLY")
+
+    /**
+     * @Route("/authenticate/2fa/enable", name="app_2fa_enable")
+     * @IsGranted("ROLE_USER")
      */
     public function enable2fa(TotpAuthenticatorInterface $totpAuthenticator, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser();
         if (!$user->isTotpAuthenticationEnabled()) {
             $user->setTotpSecret($totpAuthenticator->generateSecret());
+
             $entityManager->flush();
         }
-       return $this->render('security/enable2fa.html.twig');
+
+        //dd($totpAuthenticator->getQRContent($user));
+        return $this->render('security/enable2fa.html.twig');
     }
-     /**
+
+    /**
      * @Route("/authentication/2fa/qr-code", name="app_qr_code")
+     * @IsGranted("ROLE_USER")
      */
     public function displayGoogleAuthenticatorQrCode(QrCodeGenerator $qrCodeGenerator)
     {

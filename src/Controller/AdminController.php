@@ -42,7 +42,8 @@ class AdminController extends AbstractController
                     'backgroundColor' => [
                       'rgb(255, 99, 132)',
                       'rgb(54, 162, 235)',
-                      'rgb(255, 205, 86)'
+                      'rgb(255, 205, 86)',
+                      'rgb(227, 227, 227)'
                     ],
                     'hoverOffset' => 4,
                 ],
@@ -72,14 +73,4 @@ class AdminController extends AbstractController
 
         return new Response('Pretend comments admin page');
     }
-      /**
-     * @Route("/admin/answers")
-     */
-    public function adminAnswers()
-    {
-        $this->denyAccessUnlessGranted('ROLE_COMMENT_ADMIN');
-
-        return new Response('Pretend answers admin page');
-    }
-   
 }

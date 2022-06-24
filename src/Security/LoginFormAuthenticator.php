@@ -22,7 +22,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
-class LoginFormAuthenticator extends AbstractLoginFormAuthenticator implements AuthenticationEntryPointInterface
+
+class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
     private UserRepository $userRepository;
@@ -33,7 +34,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator implements A
         $this->userRepository = $userRepository;
         $this->router = $router;
     }
-
 
 
     public function authenticate(Request $request): Passport
@@ -67,14 +67,13 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator implements A
         if ($target = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($target);
         }
+        
         return new RedirectResponse(
             $this->router->generate('app_homepage')
         );
     }
 
-  
 
-  
    protected function getLoginUrl(Request $request): string
    {
        return $this->router->generate('app_login');

@@ -66,7 +66,10 @@ class Question
      * @ORM\JoinColumn(nullable=false)
      */
     private $owner;
-
+    public function __toString(): string
+    {
+            return (string) $this->getId();
+    }
     public function __construct()
     {
         $this->answers = new ArrayCollection();
