@@ -514,9 +514,6 @@
     "symfony/psr-http-message-bridge": {
         "version": "v2.1.2"
     },
-    "symfony/rate-limiter": {
-        "version": "v5.4.3"
-    },
     "symfony/routing": {
         "version": "5.4",
         "recipe": {
